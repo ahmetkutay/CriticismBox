@@ -63,7 +63,7 @@ userScheme.methods.comparepassword = function (password, cb) {
 
 userScheme.methods.generateToken = function (cb) {
     var user = this;
-    var token = jwt.sign(user._id.toHexString(), process.env.SECRET);
+    var token = jwt.sign(user._id.toHexString(), process.env.secret);
 
     user.token = token;
     user.save(function (err, user) {
