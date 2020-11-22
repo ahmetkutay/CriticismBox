@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const User = require('./models/user');
 const { auth } = require('./middlewares/auth');
+const confiq = require('./config/config');
 
 
 const app = express();
