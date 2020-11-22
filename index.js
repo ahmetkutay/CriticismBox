@@ -27,7 +27,7 @@ mongoose.connect(
 );
 
 app.get('/', function (req, res) {
-    res.status(200).send(`Welcome to login , sign-up api`);
+    res.status(200).send(`Orhun Çok Boş Yaptın.`);
 });
 
 // listening port
