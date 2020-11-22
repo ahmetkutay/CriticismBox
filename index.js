@@ -27,7 +27,7 @@ mongoose.connect(
 );
 
 app.get('/', function (req, res) {
-    res.status(200).send(`Orhun Çok Boş Yaptın.`);
+    res.status(200).send(`Login test`);
 });
 
 // listening port
