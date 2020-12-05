@@ -6,6 +6,8 @@ const dotenv = require('dotenv');
 const User = require('./models/user');
 const { auth } = require('./middlewares/auth');
 const confiq = require('./config/config');
+const Category = require('./models/category');
+var MongoClient = require('mongodb').MongoClient;
 
 
 const app = express();
@@ -81,6 +83,7 @@ app.post('/api/login', function (req, res) {
                             isAuth: true,
                             id: user._id,
                             email: user.email
+                            
                         });
                     });
                 });
@@ -108,6 +111,26 @@ app.get('/api/logout', auth, function (req, res) {
     });
 
 });
+
+// Cat Api
+
+app.get('/api/category', function (req,res,err) {
+
+    MongoClient.connect(process.env.DB_CONNECT,{ useUnifiedTopology: true }, function (err, db) {
+        if (err) throw err;
+        var dbo = db.db("test");
+        dbo.collection("Category").find({}).toArray(function (err, result) {
+            if (err) throw err;
+            res.json({
+                cat:result
+            });
+            db.close();
+        });
+    });
+    
+});
+
+
 
 
 
