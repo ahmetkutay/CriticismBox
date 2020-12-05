@@ -121,7 +121,9 @@ app.get('/api/category', function (req,res,err) {
         var dbo = db.db("test");
         dbo.collection("Category").find({}).toArray(function (err, result) {
             if (err) throw err;
-            res.json({});
+            res.json({
+                cat:result
+            });
             db.close();
         });
     });
