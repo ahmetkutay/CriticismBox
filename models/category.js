@@ -9,7 +9,7 @@ dotenv.config();
 
 
 const CategoryScheme = new mongoose.Schema({
-    catId:{
+    catImgUrl:{
         type: String,
     },
     catName: {
