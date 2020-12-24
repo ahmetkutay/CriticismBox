@@ -209,7 +209,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/api/category/film');
+    res.redirect('/');
 });
 
 
