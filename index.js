@@ -171,9 +171,11 @@ app.get('/api/category/kitap', function (req, res, err) {
 
 app.get('/api/users/film_favori', function (req, res, err) {
 
+    var query = { kullanici_Id : req.body._id }
+
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").find({}).toArray(function (err, result) {
+        dbo.collection("FilmFavori").find(query).toArray(function (err, result) {
             if (err) throw err;
             res.json({
                 fav: result
