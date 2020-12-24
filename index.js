@@ -220,12 +220,12 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
 app.post('/api/users/film_delete_favori', function (req, res, next) {
 
     var id = req.body.fav_Id;
-
+    var query = {favori_Id:req.body.id}
     
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").deleteOne({"favori_Id" : id }, {$set:item },function (err, result) {
+        dbo.collection("FilmFavori").deleteOne(query, {$set:item },function (err, result) {
             assert.strictEqual(null, err);
             db.close();
         });
