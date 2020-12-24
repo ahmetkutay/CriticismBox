@@ -8,6 +8,8 @@ const { auth } = require('./middlewares/auth');
 const confiq = require('./config/config');
 const Category = require('./models/category');
 var MongoClient = require('mongodb').MongoClient;
+var mongo = require('mongodb');
+var assert = require('assert');
 
 
 const app = express();
@@ -83,7 +85,7 @@ app.post('/api/login', function (req, res) {
                             isAuth: true,
                             id: user._id,
                             email: user.email
-                            
+
                         });
                     });
                 });
@@ -114,20 +116,20 @@ app.get('/api/logout', auth, function (req, res) {
 
 // Film Api
 
-app.get('/api/category/film', function (req,res,err) {
+app.get('/api/category/film', function (req, res, err) {
 
-    MongoClient.connect(process.env.DB_CONNECT,{ useUnifiedTopology: true }, function (err, db) {
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         if (err) throw err;
         var dbo = db.db("test");
         dbo.collection("Category").find({}).toArray(function (err, result) {
             if (err) throw err;
             res.json({
-                cat:result
+                cat: result
             });
             db.close();
         });
     });
-    
+
 });
 
 // Dizi Api
@@ -163,11 +165,32 @@ app.get('/api/category/kitap', function (req, res, err) {
             db.close();
         });
     });
-
 });
 
+// Favori alma
 
+app.post('/api/users/insertFavori', function (req, res, err) {
 
+    var item = {
+        kullanici_Id: req.user._id,
+        favorite: req.user.favorite
+    };
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.equal(null,err);
+        if (err) throw err;
+        var dbo = db.db("test");
+        dbo.collection("Favorite").insertOne(item,function(err,result){
+            assert.equal(null,error);
+            if (err) throw err;
+            res.json({
+                cat: result
+            });
+            db.close();
+        });
+    });
+    
+});
 
 
 
