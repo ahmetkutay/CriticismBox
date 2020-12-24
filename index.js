@@ -177,7 +177,7 @@ app.post('/api/users/insertFavori', function (req, res, err) {
     };
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
-        assert.equal(null,err);
+        assert.strictEqual(null,err);
         if (err) throw err;
         var dbo = db.db("test");
         dbo.collection("Favorite").insertOne(item,function(err,result){
