@@ -202,7 +202,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
 
 
 
-    MongoClient.connect(url, function (err, db) {
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         if (err) throw err;
         var dbo = db.db("test");
         dbo.collection("KitapFavori").insertOne(item, function (err, res) {
