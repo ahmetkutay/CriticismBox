@@ -173,7 +173,7 @@ app.get('/api/users/film_favori', function (req, res, err) {
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").find(req.body.id).toArray(function (err, result) {
+        dbo.collection("FilmFavori").findbyID(req.body.id).toArray(function (err, result) {
             if (err) throw err;
             res.json({
                 fav: result
@@ -194,16 +194,16 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
         favorite_Id: req.body.fav_Id,
         moviename: req.body.movie_name,
         imgulr: req.body.film_imgUrl,
-        overview: req.body.film_overview,
+        overview: req.body.film_overview,    
         date: req.body.film_Date,
         duration: req.body.film_duration,
         budget: req.body.film_budget
     };
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
-        assert.strictEqual(null,err);
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").insertMany([item],function(err,result){
+        dbo.collection("FilmFavori").insertOne(item,function(err,result){
+            assert.strictEqual(null,err);
             db.close();
         });
     });
