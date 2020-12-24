@@ -194,12 +194,12 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
     var item = {
         kullanici_Id: req.body._id,
         favori_Id: req.body.fav_Id,
-        film_adi: req.body.movie_name,
-        film_resmi: req.body.movie_Img,
+        moviename: req.body.moviename,
+        imgurl: req.body.imgurl,
         film_tanitimi: req.body.movie_Overview,
-        film_tarih: req.body.movie_Date,
-        film_süresi: req.body.movie_Duration,
-        film_parasi: req.body.movie_Budget
+        date: req.body.date,
+        duration: req.body.duration,
+        budget: req.body.budget
     };
 
 
