@@ -173,7 +173,7 @@ app.get('/api/users/film_favori', function (req, res, err) {
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").findbyID(req.body.id).toArray(function (err, result) {
+        dbo.collection("FilmFavori").find(req.body.id).toArray(function (err, result) {
             if (err) throw err;
             res.json({
                 fav: result
@@ -201,7 +201,6 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
     };
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
-        assert.strictEqual(null,err);
         var dbo = db.db("test");
         dbo.collection("FilmFavori").insertOne(item,function(err,result){
             assert.strictEqual(null,err);
