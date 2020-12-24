@@ -169,27 +169,23 @@ app.get('/api/category/kitap', function (req, res, err) {
 
 // Favori alma
 
-app.post('/api/users/insertFavori', function (req, res, err) {
+app.get('/api/users/insertFavori', function (req, res, next) {
 
     var item = {
-        kullanici_Id: req.body.id,
-        favorite_Id: req.body.fav_Id
+        kullanici_Id: req.body._id,
+        favorite: req.body.fav_Id
     };
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
-        assert.strictEqual(null,err);
+        assert.equal(null,err);
         if (err) throw err;
         var dbo = db.db("test");
         dbo.collection("Favorite").insertOne(item,function(err,result){
-            assert.equal(null,error);
-            if (err) throw err;
-            res.json({
-                cat: result
-            });
+            assert.strictEqual(null,err);
             db.close();
         });
     });
-    //Deneme için
+    res.redirect('/api/users/insertFavori')
 });
 
 
