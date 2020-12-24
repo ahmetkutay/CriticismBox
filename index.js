@@ -196,7 +196,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
         favori_Id: req.body.fav_Id,
         moviename: req.body.moviename,
         imgurl: req.body.imgurl,
-        movie_Overview: req.body.movie_Overview,
+        overview: req.body.overview,
         date: req.body.date,
         duration: req.body.duration,
         budget: req.body.budget
