@@ -185,7 +185,7 @@ app.post('/api/users/insertFavori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/api/profile')
+    res.redirect('/')
 });
 
 
