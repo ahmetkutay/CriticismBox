@@ -172,7 +172,7 @@ app.get('/api/category/kitap', function (req, res, err) {
 app.post('/api/users/insertFavori', function (req, res, err) {
 
     var item = {
-        kullanici_Id: req.body._id,
+        kullanici_Id: req.body.id,
         favorite_Id: req.body.fav_Id
     };
 
