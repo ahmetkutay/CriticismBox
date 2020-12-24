@@ -112,9 +112,9 @@ app.get('/api/logout', auth, function (req, res) {
 
 });
 
-// Cat Api
+// Film Api
 
-app.get('/api/category', function (req,res,err) {
+app.get('/api/category/film', function (req,res,err) {
 
     MongoClient.connect(process.env.DB_CONNECT,{ useUnifiedTopology: true }, function (err, db) {
         if (err) throw err;
@@ -128,6 +128,42 @@ app.get('/api/category', function (req,res,err) {
         });
     });
     
+});
+
+// Dizi Api
+
+app.get('/api/category/dizi', function (req, res, err) {
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        if (err) throw err;
+        var dbo = db.db("test");
+        dbo.collection("Diziler").find({}).toArray(function (err, result) {
+            if (err) throw err;
+            res.json({
+                cat: result
+            });
+            db.close();
+        });
+    });
+
+});
+
+// Kitap Api
+
+app.get('/api/category/kitap', function (req, res, err) {
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        if (err) throw err;
+        var dbo = db.db("test");
+        dbo.collection("Kitaplar").find({}).toArray(function (err, result) {
+            if (err) throw err;
+            res.json({
+                cat: result
+            });
+            db.close();
+        });
+    });
+
 });
 
 
