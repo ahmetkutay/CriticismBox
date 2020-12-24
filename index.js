@@ -207,7 +207,6 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
         assert.strictEqual(null,err);
         var dbo = db.db("test");
         dbo.collection("FilmFavori").insertMany([item,item_Id],function(err,result){
-            assert.strictEqual(null,err);
             db.close();
         });
     });
