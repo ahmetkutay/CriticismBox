@@ -200,13 +200,19 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
         film_parasi: req.body.movie_Budget
     };
 
+    var movie = {
+        
+    }
+
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").insertOne(item, function (err, result) {
-            assert.strictEqual(null, err);
-            db.close();
+        dbo.collection("Category").find(req.body.fav_Id).toArray(function(err,result){
+            dbo.collection("FilmFavori").insertOne(item, function (err, result) {
+                assert.strictEqual(null, err);
+                db.close();
+            });
         });
     });
     res.redirect('/api/users/film_favori');
