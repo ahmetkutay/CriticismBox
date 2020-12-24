@@ -189,21 +189,24 @@ app.get('/api/users/film_favori', function (req, res, err) {
 
 app.post('/api/users/film_insert_favori', function (req, res, next) {
 
-    var item = {
+    var item_Id = {
         kullanici_Id: req.body._id,
+        favorite_Id: req.body.fav_Id
+    };
+
+    var item={
         moviename: req.body.movie_name,
         imgulr: req.body.film_imgUrl,
-        overview: req.body.film_overview,    
+        overview: req.body.film_overview,
         date: req.body.film_Date,
         duration: req.body.film_duration,
-        budget: req.body.film_budget,
-        favorite_Id: req.body.fav_Id,
-    };
+        budget: req.body.film_budget
+    }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null,err);
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").insertOne(item,function(err,result){
+        dbo.collection("FilmFavori").insertMany([item,item_Id],function(err,result){
             assert.strictEqual(null,err);
             db.close();
         });
