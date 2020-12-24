@@ -175,7 +175,7 @@ app.get('/api/users/film_favori', function (req, res, err) {
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").find({}).toArray(function (err, result) {
+        dbo.collection("FilmFavori").find(query).toArray(function (err, result) {
             if (err) throw err;
             res.json({
                 fav: result
@@ -196,7 +196,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
         favori_Id: req.body.fav_Id,
         moviename: req.body.moviename,
         imgurl: req.body.imgurl,
-        film_tanitimi: req.body.movie_Overview,
+        movie_Overview: req.body.movie_Overview,
         date: req.body.date,
         duration: req.body.duration,
         budget: req.body.budget
