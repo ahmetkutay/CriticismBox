@@ -189,7 +189,7 @@ app.post('/api/users/insertFavori', function (req, res, err) {
             db.close();
         });
     });
-    
+    //Deneme için
 });
 
 
