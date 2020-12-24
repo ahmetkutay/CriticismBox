@@ -200,10 +200,21 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
         film_parasi: req.body.movie_Budget
     };
 
+    var item1 = {
+        kullanici_Id: "req.body._id",
+        favori_Id: "req.body.fav_Id",
+        film_adi: "req.body.movie_name",
+        film_resmi: "req.body.movie_Img",
+        film_tanitimi: "req.body.movie_Overview",
+        film_tarih: "req.body.movie_Date",
+        film_süresi: "req.body.movie_Duration",
+        film_parasi: "req.body.movie_Budget"
+    };
+
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").insertOne(item, function (err, result) {
+        dbo.collection("FilmFavori").insertOne(item1, function (err, result) {
             assert.strictEqual(null, err);
             db.close();
         });
