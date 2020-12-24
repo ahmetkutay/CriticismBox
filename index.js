@@ -201,18 +201,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
     };
 
 
-
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db("test");
-        dbo.collection("KitapFavori").insertOne(item, function (err, res) {
-            if (err) throw err;
-            console.log("1 document inserted");
-            db.close();
-        });
-    });
-
-  /*  MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
         dbo.collection("FilmFavori").insertOne(item, function (err, result) {
@@ -220,7 +209,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/');*/
+    res.redirect('/api/users/film_favori');
 });
 
 
