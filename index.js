@@ -180,7 +180,7 @@ app.post('/api/users/insertFavori', function (req, res, next) {
         assert.strictEqual(null,err);
         if (err) throw err;
         var dbo = db.db("test");
-        dbo.collection("Favorite").insertMany(item,function(err,result){
+        dbo.collection("Favorite").insertMany([item],function(err,result){
             assert.strictEqual(null,err);
             db.close();
         });
