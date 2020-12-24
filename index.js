@@ -173,7 +173,7 @@ app.get('/api/users/film_favori', function (req, res, err) {
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").find(req.body.id).toArray(function (err, result) {
+        dbo.collection("FilmFavori").find({}).toArray(function (err, result) {
             if (err) throw err;
             res.json({
                 fav: result
