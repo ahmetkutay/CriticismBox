@@ -167,20 +167,44 @@ app.get('/api/category/kitap', function (req, res, err) {
     });
 });
 
-// Favori alma
+// Film favori listeleme
 
-app.post('/api/users/insertFavori', function (req, res, next) {
+app.get('/api/users/film_favori', function (req, res, err) {
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        var dbo = db.db("test");
+        dbo.collection("FilmFavori").find(req.body.id).toArray(function (err, result) {
+            if (err) throw err;
+            res.json({
+                fav: result
+            });
+            db.close();
+        });
+    });
+});
+
+
+//Film favori alma
+
+
+app.post('/api/users/film_insert_favori', function (req, res, next) {
 
     var item = {
         kullanici_Id: req.body._id,
-        favorite_Id: req.body.fav_Id
+        favorite_Id: req.body.fav_Id,
+        moviename:req.body.movieName,
+        imgulr:req.body.film_imgUrl,
+        overview:req.body.film_overview,    
+        date:req.body.film_Date,
+        duration:req.body.film_duration,
+        budget:req.body.film_duration
     };
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null,err);
         if (err) throw err;
         var dbo = db.db("test");
-        dbo.collection("Favorite").insertOne(item,function(err,result){
+        dbo.collection("FilmFavori").insertOne(item,function(err,result){
             assert.strictEqual(null,err);
             db.close();
         });
