@@ -169,7 +169,7 @@ app.get('/api/category/kitap', function (req, res, err) {
 
 // Favori alma
 
-app.get('/api/users/insertFavori', function (req, res, next) {
+app.post('/api/users/insertFavori', function (req, res, next) {
 
     var item = {
         kullanici_Id: req.body._id,
@@ -177,7 +177,7 @@ app.get('/api/users/insertFavori', function (req, res, next) {
     };
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
-        assert.equal(null,err);
+        assert.strictEqual(null,err);
         if (err) throw err;
         var dbo = db.db("test");
         dbo.collection("Favorite").insertOne(item,function(err,result){
