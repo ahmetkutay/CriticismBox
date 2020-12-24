@@ -173,7 +173,7 @@ app.post('/api/users/insertFavori', function (req, res, next) {
 
     var item = {
         kullanici_Id: req.body._id,
-        favorite: req.body.fav_Id
+        favorite_Id: req.body.fav_Id
     };
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
@@ -185,7 +185,7 @@ app.post('/api/users/insertFavori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/api/users/insertFavori')
+    res.redirect('/api/profile')
 });
 
 
