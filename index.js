@@ -201,12 +201,12 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
     };
 
     var item1 = {
-        kullanici_Id: "req.body._id",
+        kullanici_Id: item.kullanici_Id,
         favori_Id: "req.body.fav_Id",
         film_adi: "req.body.movie_name",
         film_resmi: "req.body.movie_Img",
         film_tanitimi: "req.body.movie_Overview",
-        film_tarih: "req.body.movie_Date",
+        film_tarih: item.film_tarih,
         film_süresi: "req.body.movie_Duration",
         film_parasi: "req.body.movie_Budget"
     };
