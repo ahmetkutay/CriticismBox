@@ -211,7 +211,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/');
+    res.redirect('//api/users/film_insert_favori');
 });
 
 
@@ -229,7 +229,72 @@ app.post('/api/users/film_delete_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/');
+    res.redirect('/api/users/film_delete_favori');
+});
+
+// Kitap favori listeleme
+
+app.get('/api/users/kitap_favori', function (req, res, err) {
+
+    var query = { kullanici_Id: req.body._id }
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        var dbo = db.db("test");
+        dbo.collection("KitapFavori").find(query).toArray(function (err, result) {
+            if (err) throw err;
+            res.json({
+                fav: result
+            });
+            db.close();
+        });
+    });
+});
+
+
+//Film favori alma
+
+
+app.post('/api/users/kitap_insert_favori', function (req, res, next) {
+
+    var item = {
+        kullanici_Id: req.body._id,
+        favori_Id: req.body.fav_Id,
+        moviename: req.body.moviename,
+        imgurl: req.body.imgurl,
+        overview: req.body.overview,
+        date: req.body.date,
+        duration: req.body.duration,
+        budget: req.body.budget
+    };
+
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("KitapFavori").insertOne(item, function (err, result) {
+            assert.strictEqual(null, err);
+            db.close();
+        });
+    });
+    res.redirect('/api/users/kitap_insert_favori');
+});
+
+
+// Film favori silme
+
+app.post('/api/users/kitap_delete_favori', function (req, res, next) {
+
+    var query = { favori_Id: req.body.fav_Id }
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("KitapFavori").deleteOne(query, function (err, result) {
+            assert.strictEqual(null, err);
+            db.close();
+        });
+    });
+    res.redirect('/api/users/kitap_delete_favori');
 });
 
 
