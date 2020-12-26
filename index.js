@@ -365,5 +365,67 @@ app.post('/api/users/dizi_delete_favori', function (req, res, next) {
 
 
 
+// Yorum listeleme
+
+
+app.get('/api/users/yorum', function (req, res, err) {
+
+    var query = { kullanici_Id: req.body._id , urun_Id:req.body.urun_Id }
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        var dbo = db.db("test");
+        dbo.collection("KullaniciYorum").find(query).toArray(function (err, result) {
+            if (err) throw err;
+            res.json({
+                fav: result
+            });
+            db.close();
+        });
+    });
+});
+
+
+//Dizi favori alma
+
+
+app.post('/api/users/dizi_insert_favori', function (req, res, next) {
+
+    var item = {
+        kullanici_Id: req.body._id,
+        urun_Id: req.body.fav_Id,
+        kullanici_Yorum:req.body.yorum
+
+    };
+
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("KullaniciYorum").insertOne(item, function (err, result) {
+            assert.strictEqual(null, err);
+            db.close();
+        });
+    });
+    res.redirect('/api/users/yorum');
+});
+
+
+// Dizi favori silme
+
+app.post('/api/users/dizi_delete_favori', function (req, res, next) {
+
+    var query = { yorum_Id: req.body._Id }
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("KullaniciYorum").deleteOne(query, function (err, result) {
+            assert.strictEqual(null, err);
+            db.close();
+        });
+    });
+    res.redirect('/api/users/yorum');
+});
+
 
 
