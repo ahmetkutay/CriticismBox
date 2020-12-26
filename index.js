@@ -211,7 +211,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('//api/users/film_insert_favori');
+    res.redirect('/api/users/film_favori');
 });
 
 
@@ -229,7 +229,7 @@ app.post('/api/users/film_delete_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/api/users/film_delete_favori');
+    res.redirect('/api/users/film_favori');
 });
 
 // Kitap favori listeleme
@@ -251,7 +251,7 @@ app.get('/api/users/kitap_favori', function (req, res, err) {
 });
 
 
-//Film favori alma
+//Kitap favori alma
 
 
 app.post('/api/users/kitap_insert_favori', function (req, res, next) {
@@ -276,11 +276,11 @@ app.post('/api/users/kitap_insert_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/api/users/kitap_insert_favori');
+    res.redirect('/api/users/kitap_favori');
 });
 
 
-// Film favori silme
+// Kitap favori silme
 
 app.post('/api/users/kitap_delete_favori', function (req, res, next) {
 
@@ -294,9 +294,74 @@ app.post('/api/users/kitap_delete_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/api/users/kitap_delete_favori');
+    res.redirect('/api/users/kitap_favori');
 });
 
+// Dizi favori listeleme
+
+
+app.get('/api/users/dizi_favori', function (req, res, err) {
+
+    var query = { kullanici_Id: req.body._id }
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        var dbo = db.db("test");
+        dbo.collection("DiziFavori").find(query).toArray(function (err, result) {
+            if (err) throw err;
+            res.json({
+                fav: result
+            });
+            db.close();
+        });
+    });
+});
+
+
+//Dizi favori alma
+
+
+app.post('/api/users/dizi_insert_favori', function (req, res, next) {
+
+    var item = {
+        kullanici_Id: req.body._id,
+        favori_Id: req.body.fav_Id,
+        moviename: req.body.moviename,
+        imgurl: req.body.imgurl,
+        overview: req.body.overview,
+        date: req.body.date,
+        duration: req.body.duration,
+        budget: req.body.budget
+    };
+
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("DiziFavori").insertOne(item, function (err, result) {
+            assert.strictEqual(null, err);
+            db.close();
+        });
+    });
+    res.redirect('/api/users/dizi_favori');
+});
+
+
+// Dizi favori silme
+
+app.post('/api/users/dizi_delete_favori', function (req, res, next) {
+
+    var query = { favori_Id: req.body.fav_Id }
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("DiziFavori").deleteOne(query, function (err, result) {
+            assert.strictEqual(null, err);
+            db.close();
+        });
+    });
+    res.redirect('/api/users/dizi_favori');
+});
 
 
 
