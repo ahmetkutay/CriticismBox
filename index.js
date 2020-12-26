@@ -388,7 +388,7 @@ app.get('/api/users/yorum', function (req, res, err) {
 //Dizi favori alma
 
 
-app.post('/api/users/dizi_insert_favori', function (req, res, next) {
+app.post('/api/users/yorum_insert', function (req, res, next) {
 
     var item = {
         kullanici_Id: req.body._id,
@@ -412,7 +412,7 @@ app.post('/api/users/dizi_insert_favori', function (req, res, next) {
 
 // Dizi favori silme
 
-app.post('/api/users/dizi_delete_favori', function (req, res, next) {
+app.post('/api/users/yorum_delete', function (req, res, next) {
 
     var query = { yorum_Id: req.body._Id }
 
