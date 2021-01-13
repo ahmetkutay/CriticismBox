@@ -220,7 +220,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
 app.post('/api/users/film_delete_favori', function (req, res, next) {
 
     var query = {favori_Id:req.body.fav_Id}
-    
+
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
@@ -367,10 +367,27 @@ app.post('/api/users/dizi_delete_favori', function (req, res, next) {
 
 // Yorum listeleme
 
-
 app.get('/api/users/yorum', function (req, res, err) {
 
-    var query = { kullanici_Id: req.body._id , urun_Id:req.body.urun_Id }
+    var query = { kullanici_Id: req.query.kullanici_id }
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        var dbo = db.db("test");
+        dbo.collection("KullaniciYorum").find(query).toArray(function (err, result) {
+            if (err) throw err;
+            res.json({
+                fav: result
+            });
+            db.close();
+        });
+    });
+});
+
+//Ürüm Yorum Listemele
+
+app.get('/api/users/urun_yorum', function (req, res, err) {
+
+    var query = { urun_Id: req.query.urun_Id }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
@@ -385,7 +402,7 @@ app.get('/api/users/yorum', function (req, res, err) {
 });
 
 
-//Dizi favori alma
+//yorum insert apisi
 
 
 app.post('/api/users/yorum_insert', function (req, res, next) {
@@ -393,10 +410,10 @@ app.post('/api/users/yorum_insert', function (req, res, next) {
     var item = {
         kullanici_Id: req.body._id,
         urun_Id: req.body.fav_Id,
-        kullanici_Yorum:req.body.yorum
+        kullanici_name: req.body.kullaniciAdi,
+        kullanici_Yorum: req.body.yorum
 
     };
-
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
@@ -410,22 +427,48 @@ app.post('/api/users/yorum_insert', function (req, res, next) {
 });
 
 
-// Dizi favori silme
+// yorum silme apisi
 
 app.post('/api/users/yorum_delete', function (req, res, next) {
 
-    var query = { yorum_Id: req.body._Id }
+    var query = { yorum_Id: req.query.kullanici_id }
+    var mongoId = req.body._id;
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
-        dbo.collection("KullaniciYorum").deleteOne(query, function (err, result) {
+        dbo.collection("KullaniciYorum").find(query, function (err, result) {
+            dbo.collection("KullaniciYorum").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                assert.strictEqual(null, err);
+                db.close();
+            });
+        });
+        res.redirect('/api/users/yorum');
+    })
+});
+
+
+// yorum update apisi
+
+
+app.post('/api/users/yorum_update', function (req, res, next) {
+
+    var item = {
+        kullanici_Id: req.body.kullanici_id,
+        urun_Id: req.body.fav_Id,
+        kullanici_name: req.body.kullaniciAdi,
+        kullanici_Yorum: req.body.yorum
+    };
+
+    var mongoId = req.body._id;
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("KullaniciYorum").updateOne({ "_id": mongo.ObjectId(mongoId) }, { $set: item }, function (err, result) {
             assert.strictEqual(null, err);
             db.close();
         });
     });
     res.redirect('/api/users/yorum');
 });
-
-
-
