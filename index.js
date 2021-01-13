@@ -215,23 +215,6 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
 });
 
 
-// Film favori silme
-
-app.post('/api/users/film_delete_favori', function (req, res, next) {
-
-    var query = {favori_Id:req.body.fav_Id}
-
-    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
-        assert.strictEqual(null, err);
-        var dbo = db.db("test");
-        dbo.collection("FilmFavori").deleteOne(query,function (err, result) {
-            assert.strictEqual(null, err);
-            db.close();
-        });
-    });
-    res.redirect('/api/users/film_favori');
-});
-
 // Kitap favori listeleme
 
 app.get('/api/users/kitap_favori', function (req, res, err) {
@@ -279,26 +262,7 @@ app.post('/api/users/kitap_insert_favori', function (req, res, next) {
     res.redirect('/api/users/kitap_favori');
 });
 
-
-// Kitap favori silme
-
-app.post('/api/users/kitap_delete_favori', function (req, res, next) {
-
-    var query = { favori_Id: req.body.fav_Id }
-
-    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
-        assert.strictEqual(null, err);
-        var dbo = db.db("test");
-        dbo.collection("KitapFavori").deleteOne(query, function (err, result) {
-            assert.strictEqual(null, err);
-            db.close();
-        });
-    });
-    res.redirect('/api/users/kitap_favori');
-});
-
-// Dizi favori listeleme
-
+//Dizi favori gösterme
 
 app.get('/api/users/dizi_favori', function (req, res, err) {
 
@@ -345,23 +309,38 @@ app.post('/api/users/dizi_insert_favori', function (req, res, next) {
     res.redirect('/api/users/dizi_favori');
 });
 
+// favori silme
 
-// Dizi favori silme
+app.post('/api/users/favori_delete', function (req, res, next) {
 
-app.post('/api/users/dizi_delete_favori', function (req, res, next) {
-
-    var query = { favori_Id: req.body.fav_Id }
+    var query = { kullanici_Id: req.query.kullanici_id }
+    var query_2 = { urun_id: req.query.urun_id }
+    var mongoId = req.body._id
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
-        dbo.collection("DiziFavori").deleteOne(query, function (err, result) {
-            assert.strictEqual(null, err);
-            db.close();
+        dbo.collection("FilmFavori").find(query, function (err, result) {
+                dbo.collection("FilmFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                    db.close();
+                });
+        });
+
+        dbo.collection("DiziFavori").find(query, function (err, result) {
+                dbo.collection("DiziFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                    db.close();
+                });
+        });
+
+        dbo.collection("KitapFavori").find(query, function (err, result) {
+                dbo.collection("KitapFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                    db.close();
+                });
         });
     });
-    res.redirect('/api/users/dizi_favori');
+    res.send('Seçilen Veri Silindi.');
 });
+
 
 
 
