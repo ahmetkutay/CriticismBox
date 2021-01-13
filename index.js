@@ -41,7 +41,7 @@ app.listen(PORT, () => {
     console.log(`app is live at ${PORT}`);
 });
 
-// adding new user (sign-up route)
+// register apisi
 app.post('/api/register', function (req, res) {
     // taking a user
     const newuser = new User(req.body);
@@ -84,7 +84,8 @@ app.post('/api/login', function (req, res) {
                         res.cookie('auth', user.token).json({
                             isAuth: true,
                             id: user._id,
-                            email: user.email
+                            email: user.email,
+                            name: user.name
 
                         });
                     });
@@ -171,7 +172,7 @@ app.get('/api/category/kitap', function (req, res, err) {
 
 app.get('/api/users/film_favori', function (req, res, err) {
 
-    var query = { kullanici_Id : req.body._id }
+    var query = { kullanici_Id: req.query._id }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
@@ -187,7 +188,6 @@ app.get('/api/users/film_favori', function (req, res, err) {
 
 
 //Film favori alma
-
 
 app.post('/api/users/film_insert_favori', function (req, res, next) {
 
@@ -211,15 +211,32 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/api/users/film_favori');
+    res.send('Favori Eklendi');
 });
 
+
+// Film favori silme
+
+app.post('/api/users/film_delete_favori', function (req, res, next) {
+
+    var query = { favori_Id: req.body.fav_Id }
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("FilmFavori").deleteOne(query, function (err, result) {
+            assert.strictEqual(null, err);
+            db.close();
+        });
+    });
+    res.redirect('/api/users/film_favori');
+});
 
 // Kitap favori listeleme
 
 app.get('/api/users/kitap_favori', function (req, res, err) {
 
-    var query = { kullanici_Id: req.body._id }
+    var query = { kullanici_Id: req.query._id }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
@@ -235,7 +252,6 @@ app.get('/api/users/kitap_favori', function (req, res, err) {
 
 
 //Kitap favori alma
-
 
 app.post('/api/users/kitap_insert_favori', function (req, res, next) {
 
@@ -262,11 +278,45 @@ app.post('/api/users/kitap_insert_favori', function (req, res, next) {
     res.redirect('/api/users/kitap_favori');
 });
 
-//Dizi favori gösterme
+
+// favori silme bakılıcak asserion null error bak
+
+app.post('/api/users/favori_delete', function (req, res, next) {
+
+    var query = { kullanici_Id: req.query.kullanici_id }
+    var query_2 = { urun_id: req.query.urun_id }
+    var mongoId = req.body._id
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("FilmFavori").find(query, function (err, result) {
+                dbo.collection("FilmFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                    db.close();
+                });
+        });
+
+        dbo.collection("DiziFavori").find(query, function (err, result) {
+                dbo.collection("DiziFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                    db.close();
+                });
+        });
+
+        dbo.collection("KitapFavori").find(query, function (err, result) {
+                dbo.collection("KitapFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                    db.close();
+                });
+        });
+    });
+    res.send('Seçilen Veri Silindi.');
+});
+
+// Dizi favori listeleme
+
 
 app.get('/api/users/dizi_favori', function (req, res, err) {
 
-    var query = { kullanici_Id: req.body._id }
+    var query = { kullanici_Id: req.query._id }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
@@ -309,38 +359,23 @@ app.post('/api/users/dizi_insert_favori', function (req, res, next) {
     res.redirect('/api/users/dizi_favori');
 });
 
-// favori silme
 
-app.post('/api/users/favori_delete', function (req, res, next) {
+// Dizi favori silme
 
-    var query = { kullanici_Id: req.query.kullanici_id }
-    var query_2 = { urun_id: req.query.urun_id }
-    var mongoId = req.body._id
+app.post('/api/users/dizi_delete_favori', function (req, res, next) {
+
+    var query = { favori_Id: req.body.fav_Id }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").find(query, function (err, result) {
-                dbo.collection("FilmFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
-                    db.close();
-                });
-        });
-
-        dbo.collection("DiziFavori").find(query, function (err, result) {
-                dbo.collection("DiziFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
-                    db.close();
-                });
-        });
-
-        dbo.collection("KitapFavori").find(query, function (err, result) {
-                dbo.collection("KitapFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
-                    db.close();
-                });
+        dbo.collection("DiziFavori").deleteOne(query, function (err, result) {
+            assert.strictEqual(null, err);
+            db.close();
         });
     });
-    res.send('Seçilen Veri Silindi.');
+    res.redirect('/api/users/dizi_favori');
 });
-
 
 
 
