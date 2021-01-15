@@ -41,7 +41,7 @@ app.listen(PORT, () => {
     console.log(`app is live at ${PORT}`);
 });
 
-// adding new user (sign-up route)
+// register apisi
 app.post('/api/register', function (req, res) {
     // taking a user
     const newuser = new User(req.body);
@@ -84,7 +84,8 @@ app.post('/api/login', function (req, res) {
                         res.cookie('auth', user.token).json({
                             isAuth: true,
                             id: user._id,
-                            email: user.email
+                            email: user.email,
+                            name: user.name
 
                         });
                     });
@@ -171,7 +172,7 @@ app.get('/api/category/kitap', function (req, res, err) {
 
 app.get('/api/users/film_favori', function (req, res, err) {
 
-    var query = { kullanici_Id : req.body._id }
+    var query = { kullanici_Id: req.query._id }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
@@ -187,7 +188,6 @@ app.get('/api/users/film_favori', function (req, res, err) {
 
 
 //Film favori alma
-
 
 app.post('/api/users/film_insert_favori', function (req, res, next) {
 
@@ -211,7 +211,7 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
             db.close();
         });
     });
-    res.redirect('/api/users/film_favori');
+    res.send('Favori Eklendi');
 });
 
 
@@ -219,12 +219,12 @@ app.post('/api/users/film_insert_favori', function (req, res, next) {
 
 app.post('/api/users/film_delete_favori', function (req, res, next) {
 
-    var query = {favori_Id:req.body.fav_Id}
-    
+    var query = { favori_Id: req.body.fav_Id }
+
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
-        dbo.collection("FilmFavori").deleteOne(query,function (err, result) {
+        dbo.collection("FilmFavori").deleteOne(query, function (err, result) {
             assert.strictEqual(null, err);
             db.close();
         });
@@ -236,7 +236,7 @@ app.post('/api/users/film_delete_favori', function (req, res, next) {
 
 app.get('/api/users/kitap_favori', function (req, res, err) {
 
-    var query = { kullanici_Id: req.body._id }
+    var query = { kullanici_Id: req.query._id }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
@@ -252,7 +252,6 @@ app.get('/api/users/kitap_favori', function (req, res, err) {
 
 
 //Kitap favori alma
-
 
 app.post('/api/users/kitap_insert_favori', function (req, res, next) {
 
@@ -280,21 +279,36 @@ app.post('/api/users/kitap_insert_favori', function (req, res, next) {
 });
 
 
-// Kitap favori silme
+// favori silme bakılıcak asserion null error bak
 
-app.post('/api/users/kitap_delete_favori', function (req, res, next) {
+app.post('/api/users/favori_delete', function (req, res, next) {
 
-    var query = { favori_Id: req.body.fav_Id }
+    var query = { kullanici_Id: req.query.kullanici_id }
+    var query_2 = { urun_id: req.query.urun_id }
+    var mongoId = req.body._id
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
-        dbo.collection("KitapFavori").deleteOne(query, function (err, result) {
-            assert.strictEqual(null, err);
-            db.close();
+        dbo.collection("FilmFavori").find(query, function (err, result) {
+                dbo.collection("FilmFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                    db.close();
+                });
+        });
+
+        dbo.collection("DiziFavori").find(query, function (err, result) {
+                dbo.collection("DiziFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                    db.close();
+                });
+        });
+
+        dbo.collection("KitapFavori").find(query, function (err, result) {
+                dbo.collection("KitapFavori").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                    db.close();
+                });
         });
     });
-    res.redirect('/api/users/kitap_favori');
+    res.send('Seçilen Veri Silindi.');
 });
 
 // Dizi favori listeleme
@@ -302,7 +316,7 @@ app.post('/api/users/kitap_delete_favori', function (req, res, next) {
 
 app.get('/api/users/dizi_favori', function (req, res, err) {
 
-    var query = { kullanici_Id: req.body._id }
+    var query = { kullanici_Id: req.query._id }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
@@ -367,10 +381,27 @@ app.post('/api/users/dizi_delete_favori', function (req, res, next) {
 
 // Yorum listeleme
 
-
 app.get('/api/users/yorum', function (req, res, err) {
 
-    var query = { kullanici_Id: req.body._id , urun_Id:req.body.urun_Id }
+    var query = { kullanici_Id: req.query.kullanici_id }
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        var dbo = db.db("test");
+        dbo.collection("KullaniciYorum").find(query).toArray(function (err, result) {
+            if (err) throw err;
+            res.json({
+                fav: result
+            });
+            db.close();
+        });
+    });
+});
+
+//Ürüm Yorum Listemele
+
+app.get('/api/users/urun_yorum', function (req, res, err) {
+
+    var query = { urun_Id: req.query.urun_Id }
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         var dbo = db.db("test");
@@ -385,7 +416,7 @@ app.get('/api/users/yorum', function (req, res, err) {
 });
 
 
-//Dizi favori alma
+//yorum insert apisi
 
 
 app.post('/api/users/yorum_insert', function (req, res, next) {
@@ -393,10 +424,10 @@ app.post('/api/users/yorum_insert', function (req, res, next) {
     var item = {
         kullanici_Id: req.body._id,
         urun_Id: req.body.fav_Id,
-        kullanici_Yorum:req.body.yorum
+        kullanici_name: req.body.kullaniciAdi,
+        kullanici_Yorum: req.body.yorum
 
     };
-
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
@@ -410,22 +441,48 @@ app.post('/api/users/yorum_insert', function (req, res, next) {
 });
 
 
-// Dizi favori silme
+// yorum silme apisi
 
 app.post('/api/users/yorum_delete', function (req, res, next) {
 
-    var query = { yorum_Id: req.body._Id }
+    var query = { yorum_Id: req.query.kullanici_id }
+    var mongoId = req.body._id;
 
     MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
         assert.strictEqual(null, err);
         var dbo = db.db("test");
-        dbo.collection("KullaniciYorum").deleteOne(query, function (err, result) {
+        dbo.collection("KullaniciYorum").find(query, function (err, result) {
+            dbo.collection("KullaniciYorum").deleteOne({ "_id": mongo.ObjectId(mongoId) }, function (err, result) {
+                assert.strictEqual(null, err);
+                db.close();
+            });
+        });
+        res.redirect('/api/users/yorum');
+    })
+});
+
+
+// yorum update apisi
+
+
+app.post('/api/users/yorum_update', function (req, res, next) {
+
+    var item = {
+        kullanici_Id: req.body.kullanici_id,
+        urun_Id: req.body.fav_Id,
+        kullanici_name: req.body.kullaniciAdi,
+        kullanici_Yorum: req.body.yorum
+    };
+
+    var mongoId = req.body._id;
+
+    MongoClient.connect(process.env.DB_CONNECT, { useUnifiedTopology: true }, function (err, db) {
+        assert.strictEqual(null, err);
+        var dbo = db.db("test");
+        dbo.collection("KullaniciYorum").updateOne({ "_id": mongo.ObjectId(mongoId) }, { $set: item }, function (err, result) {
             assert.strictEqual(null, err);
             db.close();
         });
     });
     res.redirect('/api/users/yorum');
 });
-
-
-
