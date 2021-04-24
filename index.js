@@ -650,3 +650,119 @@ app.get("/api/users/tweet", function (req, res, err) {
     }
   );
 });
+
+app.post("/api/users/insert_follow", function (req, res, next) {
+  var query = { TYPE: req.query.type };
+  var status;
+  var followedItem = {
+    kullanici_Id: req.body._id,
+    followed_users: req.body.followed_users_Id,
+    kullanici_name: req.body.kullaniciAdi,
+  };
+  var followersItem = {
+    kullanici_Id: req.body._id,
+    followers_users: req.body.followers_users_Id,
+    kullanici_name: req.body.kullaniciAdi,
+  };
+
+  MongoClient.connect(
+    process.env.DB_CONNECT,
+    { useUnifiedTopology: true },
+    function (err, db) {
+      assert.strictEqual(null, err);
+      var dbo = db.db("test");
+      if (query.TYPE === "FOLLOW") {
+        dbo
+          .collection("followed")
+          .insertOne(followedItem, function (err, result) {
+            assert.strictEqual(null, err);
+            status = "Takip ediliyor";
+            db.close();
+          });
+        res.send("Veri Eklendi.");
+      } else if (query.TYPE === "FOLLOWERS") {
+        dbo
+          .collection("followers")
+          .insertOne(followersItem, function (err, result) {
+            assert.strictEqual(null, err);
+            status = "Takip ediyor";
+            db.close();
+          });
+        res.send("Veri Eklendi.");
+      }
+    }
+  );
+});
+
+app.post("/api/users/delete_follow", function (req, res, next) {
+  var query = { TYPE: req.query.type };
+  var mongoId = req.body._id;
+
+  MongoClient.connect(
+    process.env.DB_CONNECT,
+    { useUnifiedTopology: true },
+    function (err, db) {
+      assert.strictEqual(null, err);
+      var dbo = db.db("test");
+      if (query.TYPE === "DELETE_FOLLOW") {
+        dbo
+          .collection("followed")
+          .deleteOne({ _id: mongo.ObjectId(mongoId) }, function (err, result) {
+            db.close();
+          });
+        res.send("Veri Eklendi.");
+      } else if (query.TYPE === "DETELE_FOLLOWERS") {
+        dbo
+          .collection("followers")
+          .deleteOne({ _id: mongo.ObjectId(mongoId) }, function (err, result) {
+            db.close();
+          });
+        res.send("Veri Eklendi.");
+      }
+    }
+  );
+});
+
+app.get("/api/users/followers", function (req, res, err) {
+  var kullanıcı_Id = { kullanıcı_Id: req.query.kullanici_Id };
+
+  MongoClient.connect(
+    process.env.DB_CONNECT,
+    { useUnifiedTopology: true },
+    function (err, db) {
+      var dbo = db.db("test");
+      dbo
+        .collection("followers")
+        .find(kullanıcı_Id)
+        .toArray(function (err, result) {
+          if (err) throw err;
+          res.json({
+            tweet: result,
+          });
+          db.close();
+        });
+    }
+  );
+});
+
+app.get("/api/users/followed", function (req, res, err) {
+  var kullanıcı_Id = { kullanıcı_Id: req.query.kullanici_Id };
+
+  MongoClient.connect(
+    process.env.DB_CONNECT,
+    { useUnifiedTopology: true },
+    function (err, db) {
+      var dbo = db.db("test");
+      dbo
+        .collection("followed")
+        .find(kullanıcı_Id)
+        .toArray(function (err, result) {
+          if (err) throw err;
+          res.json({
+            tweet: result,
+          });
+          db.close();
+        });
+    }
+  );
+});
