@@ -559,15 +559,36 @@ app.post("/api/users/yorum_update", function (req, res, next) {
   res.redirect("/api/users/yorum");
 });
 
+app.get("/api/tweet", function (req, res, err) {
+  MongoClient.connect(
+    process.env.DB_CONNECT,
+    { useUnifiedTopology: true },
+    function (err, db) {
+      if (err) throw err;
+      var dbo = db.db("test");
+      dbo
+        .collection("tweet")
+        .find({})
+        .toArray(function (err, result) {
+          if (err) throw err;
+          res.json({
+            tweet: result,
+          });
+          db.close();
+        });
+    }
+  );
+});
+
 app.post("/api/users/tweet_insert", function (req, res, next) {
   var query = { TYPE: req.query.type };
-  var yorumId = { urun_id: req.query.yorum_Id };
+  var tweetId = { tweetId_id: req.query.yorum_Id };
   var mongoId = req.body._id;
 
   var item = {
     kullanici_Id: req.body._id,
     kullanici_name: req.body.kullaniciAdi,
-    kullanici_Yorum: req.body.yorum,
+    kullanici_tweet: req.body.yorum,
   };
 
   MongoClient.connect(
@@ -585,7 +606,7 @@ app.post("/api/users/tweet_insert", function (req, res, next) {
       }
 
       if (query.TYPE === "DELETE") {
-        dbo.collection("tweet").find(yorumId, function (err, result) {
+        dbo.collection("tweet").find(tweetId, function (err, result) {
           dbo
             .collection("tweet")
             .deleteOne(
@@ -599,7 +620,7 @@ app.post("/api/users/tweet_insert", function (req, res, next) {
       }
 
       if (query.TYPE === "UPDATE") {
-        dbo.collection("tweet").find(yorumId, function (err, result) {
+        dbo.collection("tweet").find(tweetId, function (err, result) {
           dbo
             .collection("tweet")
             .updateOne(
