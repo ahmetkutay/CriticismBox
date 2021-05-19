@@ -590,7 +590,7 @@ app.post("/api/users/tweet_insert", function (req, res, next) {
     kullanici_name: req.body.kullaniciAdi,
     kullanici_tweet: req.body.yorum,
   };
-
+  // Heroku crash conrtol
   MongoClient.connect(
     process.env.DB_CONNECT,
     { useUnifiedTopology: true },
