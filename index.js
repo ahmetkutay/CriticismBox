@@ -572,7 +572,7 @@ app.get("/api/tweet", function (req, res, err) {
         .toArray(function (err, result) {
           if (err) throw err;
           res.json({
-            tweet: result,
+            tweets: result,
           });
           db.close();
         });
